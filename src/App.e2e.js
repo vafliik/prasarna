@@ -1,83 +1,93 @@
-const { Machine } = require('xstate');
-const { createModel } = require('@xstate/test');
+const { Machine } = require("xstate");
+const { createModel } = require("@xstate/test");
 
-describe('feedback app', () => {
-  const feedbackMachine = Machine({
-    id: 'feedback',
-    initial: 'question',
+describe("Adco app", () => {
+  const adcoMachine = Machine({
+    id: "wizard",
+    initial: "start",
     states: {
-      question: {
+      start: {
         on: {
-          CLICK_GOOD: 'thanks',
-          CLICK_BAD: 'form',
-          CLOSE: 'closed'
+          BOM_UPLOAD: "step2",
         },
         meta: {
-          test: async page => {
-            await page.waitFor('[data-testid="question-screen"]');
-          }
-        }
+          test: async (page) => {
+            await page.waitFor('[data-qa-id="bom-upload"]');
+          },
+        },
       },
-      form: {
+      start2: {
+        type: "final",
+        meta: {
+          test: async (page) => {
+            await page.waitFor('[data-qa-id="bom-upload"]');
+          },
+        },
+      },
+      step2: {
         on: {
-          SUBMIT: [
-            {
-              target: 'thanks',
-              cond: (_, e) => e.value.length
-            }
-          ],
-          CLOSE: 'closed'
+          CLICK_BACK: "start2",
+          // REQUEST_QUOTE: "step3",
         },
         meta: {
-          test: async page => {
-            await page.waitFor('[data-testid="form-screen"]');
-          }
-        }
-      },
-      thanks: {
-        on: {
-          CLOSE: 'closed'
+          test: async (page) => {
+            await page.waitFor('[data-qa-id="back-button"]');
+            await page.waitFor('[data-qa-id="cm-button"]');
+          },
         },
-        meta: {
-          test: async page => {
-            await page.waitFor('[data-testid="thanks-screen"]');
-          }
-        }
       },
-      closed: {
-        type: 'final',
-        meta: {
-          test: async page => {
-            return true;
-          }
-        }
-      }
-    }
+      // step3: {
+      //   type: "final",
+      //   meta: {
+      //     test: async (page) => {
+      //       await page.waitFor('[data-qa-id="estimated-price"]');
+      //     },
+      //   },
+      // },
+    },
   });
 
-  const testModel = createModel(feedbackMachine, {
-    events: {
-      CLICK_GOOD: async page => {
-        await page.click('[data-testid="good-button"]');
-      },
-      CLICK_BAD: async page => {
-        await page.click('[data-testid="bad-button"]');
-      },
-      CLOSE: async page => {
-        await page.click('[data-testid="close-button"]');
-      },
-      ESC: async page => {
-        await page.press('Escape');
-      },
-      SUBMIT: {
-        exec: async (page, event) => {
-          await page.type('[data-testid="response-input"]', event.value);
-          await page.click('[data-testid="submit-button"]');
-        },
-        cases: [{ value: 'something' }, { value: '' }]
-      }
-    }
+  const testModel = createModel(adcoMachine).withEvents({
+    BOM_UPLOAD: async (page) => {
+      const uploadHandle = await page.waitFor(
+        '[data-qa-id="bom-upload"] input[type="file"]'
+      );
+      await uploadHandle.uploadFile(
+        "/home/vafliik/projects/adco/QA/tests_shi/data/bom/basic.xlsx"
+      );
+    },
+
+    CLICK_BACK: async (page) => {
+      await page.click('[data-qa-id="back-button"]');
+    },
   });
+
+  // const testModel = createModel(adcoMachine, {
+  //   events: {
+  //     BOM_UPLOAD: async (page) => {
+  //       const uploadHandle = await page.waitFor(
+  //         '[data-qa-id="bom-upload"] input[type="file"]'
+  //       );
+  //       await uploadHandle.uploadFile(
+  //         "/home/vafliik/projects/adco/QA/tests_shi/data/bom/basic.xlsx"
+  //       );
+  //     },
+  //     CLICK_BACK: async page => {
+  //       await page.waitFor('[data-qa-id="back-button"]');
+  //       await page.$eval('[data-qa-id="back-button"]', elem => elem.click());
+  //       // await page.click('[data-qa-id="back-button"]');
+  //     },
+  //     REQUEST_QUOTE: {
+  //       exec: async (page) => {
+  //         await page.type('[data-qa-id="assembly-quantity-input"]', "1");
+  //         await page.click('[data-qa-id="continue-button"]');
+  //       },
+  //       // await page.$eval('[data-qa-id="assembly-quantity-input"]', el => el.value = '1');
+  //       // await page.type('[data-qa-id="assembly-quantity-input"]', "1");
+  //       // await page.click('[data-qa-id="continue-button"]');
+  //     },
+  //   },
+  // });
 
   const testPlans = testModel.getSimplePathPlans();
 
@@ -87,16 +97,16 @@ describe('feedback app', () => {
         it(
           path.description,
           async () => {
-            await page.goto(`http://localhost:${process.env.PORT || '3000'}`);
+            await page.goto(`https://adco-dev.herokuapp.com`);
             await path.test(page);
           },
-          10000
+          20000
         );
       });
     });
   });
 
-  it('coverage', () => {
+  it("coverage", () => {
     testModel.testCoverage();
   });
 });

@@ -5,38 +5,6 @@ import { render, fireEvent, cleanup } from '@testing-library/react';
 import { assert } from 'chai';
 import { createModel } from '@xstate/test';
 
-// describe('feedback app', () => {
-//   afterEach(cleanup);
-
-//   it('should show the thanks screen when "Good" is clicked', () => {
-//     const { getByTestId } = render(<Feedback />);
-
-//     // The question screen should be visible at first
-//     assert.ok(getByTestId('question-screen'));
-
-//     // Click the "Good" button
-//     fireEvent.click(getByTestId('good-button'));
-
-//     // Now the thanks screen should be visible
-//     assert.ok(getByTestId('thanks-screen'));
-//   });
-
-//   it('should show the form screen when "Bad" is clicked', () => {
-//     const { getByTestId } = render(<Feedback />);
-
-//     // The question screen should be visible at first
-//     assert.ok(getByTestId('question-screen'));
-
-//     // Click the "Bad" button
-//     fireEvent.click(getByTestId('bad-button'));
-
-//     // Now the form screen should be visible
-//     assert.ok(getByTestId('form-screen'));
-//   });
-// });
-
-// ............
-
 describe('feedback app', () => {
   const feedbackMachine = Machine({
     id: 'feedback',
