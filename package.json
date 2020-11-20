@@ -1,0 +1,47 @@
+{
+  "name": "adco-test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@wdio/cli": "5.16.2",
+    "@wdio/junit-reporter": "5.15.5",
+    "@wdio/local-runner": "5.16.2",
+    "@wdio/mocha-framework": "5.16.0",
+    "@wdio/selenium-standalone-service": "5.15.0",
+    "@wdio/spec-reporter": "5.15.2",
+    "@xstate/test": "^0.4.0",
+    "chai": "4.2.0",
+    "eslint": "^7.2.0",
+    "eslint-config-airbnb": "18.0.1",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "6.2.3",
+    "eslint-plugin-react": "7.14.3",
+    "eslint-plugin-react-hooks": "1.7.0",
+    "eslint-plugin-wdio": "5.13.2",
+    "xstate": "^4.9.1"
+  },
+  "scripts": {
+    "test": "wdio wdio.conf.js",
+    "test-one": "wdio wdio.conf.js --spec",
+    "eslint": "eslint --fix test/**"
+  },
+  "dependencies": {
+    "@babel/cli": "7.7.0",
+    "@babel/core": "7.7.2",
+    "@babel/preset-env": "7.7.1",
+    "@babel/register": "7.7.0"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ]
+    ]
+  }
+}

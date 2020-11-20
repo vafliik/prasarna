@@ -1,0 +1,38 @@
+{
+    "env": {
+        "browser": true,
+        "es6": true,
+        "mocha": true
+    },
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
+    "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "rules": {
+        "class-methods-use-this": "off",
+        "no-underscore-dangle": "off",
+        "no-unused-vars": [
+            "error",
+            {
+              "varsIgnorePattern": "should|expect"
+            }
+          ],
+          "comma-dangle":"off"
+    },
+    "plugins": [
+        "wdio"
+      ],
+    "extends": [ "airbnb","plugin:wdio/recommended"],
+    "overrides": [
+        {
+            "files": "*.spec.js",
+            "rules": {
+                "no-unused-expressions": "off"
+            }
+        }
+    ]
+}
