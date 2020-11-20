@@ -1,13 +1,16 @@
-const { Machine } = require('xstate');
+const { Machine, assign } = require('xstate');
 const { createModel } = require('@xstate/test');
 
 const adcoMachine = Machine({
   id: 'wizard',
   initial: 'start',
+  context: {
+    back: false,
+  },
   states: {
     start: {
       on: {
-        BOM_UPLOAD: 'step2',
+        BOM_UPLOAD: 'uploaded_bom',
       },
       meta: {
         test: async () => {
@@ -15,18 +18,13 @@ const adcoMachine = Machine({
         },
       },
     },
-    start2: {
-      type: 'final',
-      meta: {
-        test: async () => {
-          await (await $('[data-qa-id="bom-upload"]')).waitForDisplayed();
-        },
-      },
-    },
-    step2: {
+    uploaded_bom: {
       on: {
-        CLICK_BACK: 'start2',
-        // REQUEST_QUOTE: "step3",
+        CLICK_BACK: {
+          target: 'start',
+          actions: assign({ back: true }),
+          // REQUEST_QUOTE: "step3",
+        },
       },
       meta: {
         test: async () => {
@@ -35,14 +33,6 @@ const adcoMachine = Machine({
         },
       },
     },
-    // step3: {
-    //   type: "final",
-    //   meta: {
-    //     test: async (page) => {
-    //       await page.waitFor('[data-qa-id="estimated-price"]');
-    //     },
-    //   },
-    // },
   },
 });
 
